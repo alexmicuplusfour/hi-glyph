@@ -2,7 +2,33 @@
 
 Control the Nothing Phone (4a) Pro's 13×13 LED matrix from any browser, anywhere.
 
-Install the Android app, point it at a relay server, and anyone with the link can send messages and pixel art to the display.
+Install the Android app, point it at a relay server, and anyone with the link can send messages, draw pixel art, or run animations on the display.
+
+---
+
+<table>
+  <tr>
+    <td><img src="screenshots/web/Screenshot_20260610-025306.png" width="260"/></td>
+    <td><img src="screenshots/web/Screenshot_20260610-025443.png" width="260"/></td>
+    <td><img src="screenshots/web/Screenshot_20260610-025506.png" width="260"/></td>
+  </tr>
+  <tr>
+    <td align="center">Send text</td>
+    <td align="center">Draw pixel art</td>
+    <td align="center">Run animations</td>
+  </tr>
+</table>
+
+<table>
+  <tr>
+    <td><img src="screenshots/android/Screenshot_20260610-025538.png" width="260"/></td>
+    <td><img src="screenshots/android/Screenshot_20260610-025548.png" width="260"/></td>
+  </tr>
+  <tr>
+    <td align="center">Matrix display</td>
+    <td align="center">App settings</td>
+  </tr>
+</table>
 
 ---
 

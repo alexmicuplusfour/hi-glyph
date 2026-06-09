@@ -4,6 +4,12 @@
 # Android SDK platform tools
 platform-tools/
 
+# Root-level loose asset copies (canonical versions live in relay-server/public/)
+font/
+favicon/
+sounds/
+*.ttf
+
 # macOS
 .DS_Store
 
