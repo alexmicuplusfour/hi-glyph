@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+    <color name="pixel_disabled_bg">#000000</color>
+    <color name="pixel_disabled_x">#424242</color>
+    <color name="pixel_off">#1C1C1C</color>
+    <color name="pixel_on">#FFFFFF</color>
+    <color name="card_background">#121212</color>
+    <color name="dialog_background">#121212</color>
+    <color name="mode_idle_background">#142118</color>
+    <color name="mode_idle_stroke">#2E7D32</color>
+    <color name="mode_idle_text">#81C784</color>
+    <color name="mode_always_background">#111D2E</color>
+    <color name="mode_always_stroke">#1565C0</color>
+    <color name="mode_always_text">#90CAF9</color>
+    <color name="active_badge">#4CAF50</color>
+    <color name="text_secondary">#B0B0B0</color>
+    <color name="warning_background">#211C12</color>
+    <color name="warning_stroke">#8A6A22</color>
+    <color name="warning_text">#FFD166</color>
+</resources>

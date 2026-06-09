@@ -1,0 +1,11 @@
+# Backup zips
+*.zip
+
+# Android SDK platform tools
+platform-tools/
+
+# macOS
+.DS_Store
+
+# Windows
+Thumbs.db

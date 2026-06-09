@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">hi! glyph</string>
+    <string name="toy_name_composite">hi! glyph: Multi function</string>
+    <string name="toy_summary_composite">Digital Clock (or your image), Equalizer, Call status indicator.</string>
+    <string name="toy_name_static">hi! glyph: Static image</string>
+    <string name="toy_summary_static">Image of your choice.</string>
+    <string name="toy_name_scrolling">hi! glyph</string>
+    <string name="toy_summary_scrolling">Remote glyph display via relay.</string>
+    <string name="toy_name_animation">hi! glyph: Animation</string>
+    <string name="toy_summary_animation">Play custom frame animations.</string>
+
+    <string name="permission_status_granted">Audio permission granted</string>
+    <string name="permission_status_denied">Audio permission required for the equalizer to work.</string>
+    <string name="permission_open_settings">Open Settings</string>
+    <string name="configured_display_label">Current Status:</string>
+    <string name="configured_composite_clock">Composite Glyph - Clock</string>
+    <string name="live_display_label">Live Preview:</string>
+    <string name="live_mode_call">Call</string>
+    <string name="live_mode_clock">Clock</string>
+    <string name="live_mode_custom_idle">Custom Idle</string>
+    <string name="live_mode_equalizer">Equalizer</string>
+    <string name="live_mode_static_image">Static Image</string>
+    <string name="no_selection">Not selected</string>
+    <string name="glyph_composite_name">Composite Glyph</string>
+    <string name="aod_warning_title">AOD setup needed</string>
+    <string name="aod_warning_message">Select %1$s in AOD settings. If this warning persists, turn Glyph Interface off and on.</string>
+    <string name="aod_warning_open_settings">Open AOD settings</string>
+    <string name="glyph_composite_desc">Digital Clock, Equalizer, Call status indicator</string>
+    <string name="create_new_image">+ Create New Image</string>
+    <string name="available_glyphs">Available Glyphs</string>
+    <string name="showcase_matrix_lab_logo_name">hi! glyph Logo</string>
+    <string name="showcase_cross_example_name">Cross Example</string>
+    <string name="showcase_dollar_icon_name">Dollar Icon</string>
+    <string name="selected_badge">Selected</string>
+    <string name="untitled_image">Untitled Image</string>
+
+    <string name="btn_save">Save</string>
+    <string name="btn_edit">Edit</string>
+    <string name="btn_select_for_display">Select for Display</string>
+    <string name="btn_delete">Delete</string>
+    <string name="btn_cancel">Cancel</string>
+    <string name="btn_clear">Clear</string>
+    <string name="btn_use_multi_function">Use Multi function Glyph</string>
+    <string name="editor_instructions_interactive">Tap pixels one by one to toggle.</string>
+    <string name="editor_instructions_view">Viewing image</string>
+    <string name="editor_title_create">Create Image</string>
+    <string name="editor_title_view">View Image</string>
+    <string name="editor_title_edit">Edit Image</string>
+
+    <string name="priority_dialog_title">Select Display Mode</string>
+    <string name="priority_dialog_notice">Choose when this image should appear on your Glyph Matrix. You may need to select the correct Glyph Toy in AOD settings.</string>
+    <string name="priority_composite_clock">Clock</string>
+    <string name="priority_idle_only">Idle Only</string>
+    <string name="priority_idle_desc">Your image is displayed when the phone is idle. Equalizer and call status appear depending on phone state (media playing, active call).</string>
+    <string name="priority_always_on">Always On</string>
+    <string name="priority_always_desc">Your image is shown at all times. Standard Glyph Matrix features (notifications, volume indicator, etc.) still override it.</string>
+    <string name="toast_composite_selected">Multi function selected</string>
+    <string name="toast_idle_selected">Image selected for Idle Only mode</string>
+    <string name="toast_always_selected">Image selected for Always On mode</string>
+
+    <string name="delete_dialog_title">Delete Image?</string>
+    <string name="delete_dialog_message">This action cannot be undone.</string>
+    <string name="delete_confirm">Delete</string>
+
+    <string name="name_image_dialog_title">Name Your Image</string>
+    <string name="name_image_hint">Enter image name</string>
+    <string name="composite_dialog_title">Composite Glyph</string>
+    <string name="composite_dialog_message">The Composite Glyph Toy automatically shows call status first, then the music equalizer, then a selected idle image, then the clock. Select it in the Nothing AOD toy picker to use idle images.</string>
+    <string name="composite_info_intro">The Composite Glyph Toy switches between different display modes automatically based on your phone\'s state.</string>
+    <string name="composite_feature_clock_title">Digital Clock</string>
+    <string name="composite_feature_clock_desc">Displays the current time on the Glyph Matrix. This is the default mode when the phone is idle. Can be replaced with a custom image you create.</string>
+    <string name="composite_feature_clock_preview">Clock preview on Glyph Matrix</string>
+    <string name="composite_feature_equalizer_title">Equalizer</string>
+    <string name="composite_feature_equalizer_desc">Visualizes currently playing audio with animated bars. Activates automatically when media is playing. Requires microphone permission.</string>
+    <string name="composite_feature_equalizer_preview">Equalizer preview on Glyph Matrix</string>
+    <string name="composite_feature_call_title">Call Indicator</string>
+    <string name="composite_feature_call_desc">Shows a phone icon on the matrix during active calls. This has the highest priority and overrides all other modes.</string>
+    <string name="composite_feature_call_preview">Call indicator preview on Glyph Matrix</string>
+</resources>

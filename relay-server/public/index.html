@@ -1,0 +1,1375 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#000000">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="apple-mobile-web-app-title" content="hi! glyph">
+    <link rel="apple-touch-icon" href="/icons/apple-icon-180x180.png">
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/icons/favicon-16x16.png">
+    <title>hi! glyph</title>
+    <style>
+        @font-face {
+            font-family: 'ErbosNBP';
+            src: url('/Erbos-Draco-1st-Open-NBP.woff2') format('woff2'),
+                 url('/Erbos-Draco-1st-Open-NBP.woff') format('woff');
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #000;
+            color: #fff;
+            min-height: 100vh;
+            display: flex;
+            align-items: flex-start;
+            justify-content: center;
+            padding: 70px 20px 20px;
+        }
+
+        .container {
+            max-width: 600px;
+            width: 100%;
+            min-height: calc(100vh - 120px);
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 24px;
+        }
+
+        #matrixCanvas { display: block; }
+
+        .status {
+            color: #555;
+            font-size: 12px;
+        }
+
+        #waitingMsg {
+            font-size: 12px;
+            color: #333;
+            letter-spacing: 0.05em;
+        }
+
+        .mode-toggle {
+            display: flex;
+            width: 100%;
+            border-radius: 8px;
+            overflow: hidden;
+            border: 2px solid #333;
+        }
+
+        .mode-btn {
+            flex: 1;
+            padding: 10px;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            transition: opacity 0.15s, background 0.15s;
+            border-radius: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0.25;
+        }
+
+        .mode-btn.active { opacity: 1; }
+
+        .mode-btn:hover:not(.active) {
+            background: #0d0d0d;
+            opacity: 0.55;
+        }
+
+        .icon-canvas {
+            display: block;
+            image-rendering: pixelated;
+            image-rendering: crisp-edges;
+            background: #000;
+        }
+
+        form {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 16px;
+            font-size: 18px;
+            background: #1a1a1a;
+            border: 2px solid #333;
+            border-radius: 8px;
+            color: #fff;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        input[type="text"]:focus { border-color: #fff; }
+
+        button {
+            width: 100%;
+            padding: 20px;
+            font-family: 'ErbosNBP', monospace;
+            font-size: 22px;
+            font-weight: bold;
+            background: #fff;
+            color: #000;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: transform 0.1s, opacity 0.2s;
+        }
+
+        button:hover { transform: translateY(-2px); }
+        button:active { transform: translateY(0); }
+        button:disabled { opacity: 0.5; cursor: not-allowed; }
+
+        #messageArea {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 200;
+            pointer-events: none;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .message {
+            padding: 10px 20px;
+            border-radius: 8px;
+            text-align: center;
+            font-size: 16px;
+            font-family: 'ErbosNBP', monospace;
+            white-space: nowrap;
+            opacity: 0;
+            animation: toastIn 0.2s ease forwards;
+        }
+
+        @keyframes toastIn { to { opacity: 1; } }
+
+        .message.success { background: rgb(7, 110, 59); color: #ffffff; }
+        .message.error   { background: rgb(165, 8, 60); color: #ffffff; }
+
+        .preview-status {
+            font-size: 12px;
+            color: #555;
+        }
+
+        .status-bar {
+            display: flex;
+            gap: 16px;
+            font-size: 12px;
+            color: #555;
+        }
+
+        #drawCanvas {
+            display: none;
+            touch-action: none;
+            cursor: crosshair;
+        }
+
+        .draw-actions {
+            display: none;
+            width: 100%;
+            gap: 10px;
+            flex-direction: row;
+        }
+
+        .draw-actions .clear-btn {
+            flex: 0 0 auto;
+            width: auto;
+            padding: 20px 24px;
+            font-size: 20px;
+            font-weight: bold;
+            background: #1a1a1a;
+            color: #fff;
+            border: 2px solid #333;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: transform 0.1s, opacity 0.2s;
+        }
+
+        .draw-actions .clear-btn:hover { transform: translateY(-2px); }
+        .draw-actions .clear-btn:active { transform: translateY(0); }
+        .draw-actions .send-draw-btn { flex: 1; }
+
+        /* Editor section hidden until phone connects */
+        #editorUI { display: contents; }
+        #editorUI.hidden > * { display: none !important; }
+
+        /* ── Favorites ───────────────────────────────────────────────────── */
+        #favoritesRow { width: 100%; position: relative; }
+        #toysRow { width: 100%; display: flex; flex-direction: column; }
+        #toyScrollerWrap { position: relative; width: 100%; }
+
+        /* clip-fade: right on mobile, bottom on desktop — only when clipping */
+        #favoritesRow::after, #toyScrollerWrap::after {
+            content: '';
+            position: absolute;
+            top: 0; right: 0; bottom: 0;
+            width: 60px;
+            background: linear-gradient(to right, transparent, #000);
+            pointer-events: none;
+            z-index: 2;
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+        #favoritesRow.fav-clipped::after, #toyScrollerWrap.fav-clipped::after { opacity: 1; }
+        @media (min-width: 520px) {
+            #favoritesRow::after, #toyScrollerWrap::after {
+                top: auto; left: 0; right: 0; bottom: 0;
+                width: auto; height: 60px;
+                background: linear-gradient(to bottom, transparent, #000);
+            }
+        }
+
+        .fav-scroller {
+            display: flex;
+            gap: 18px;
+            padding: 2px 0 2px;
+            overflow-x: auto;
+            overflow-y: hidden;
+            flex-wrap: nowrap;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+            -webkit-overflow-scrolling: touch;
+        }
+        .fav-scroller::-webkit-scrollbar { display: none; }
+
+        @media (min-width: 520px) {
+            .fav-scroller {
+                flex-wrap: wrap;
+                overflow-x: hidden;
+                overflow-y: auto;
+                max-height: 237px; /* ~2.5 rows */
+                align-content: flex-start;
+                scrollbar-width: thin;
+                scrollbar-color: #2a2a2a transparent;
+            }
+            .fav-scroller::-webkit-scrollbar { display: block; width: 3px; }
+            .fav-scroller::-webkit-scrollbar-thumb { background: #333; border-radius: 2px; }
+        }
+
+        .fav-thumb {
+            position: relative;
+            flex: 0 0 80px;
+            width: 80px;
+            height: 80px;
+            border-radius: 8px;
+            cursor: pointer;
+            background: #000;
+            padding: 0px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            user-select: none;
+            -webkit-user-select: none;
+            flex-shrink: 0;
+        }
+        .fav-thumb canvas {
+            display: block; 
+            width: 100%; 
+            height: 100%;
+        }
+
+        .fav-thumb--saved {
+            border: none;
+        }
+        .fav-thumb--saved:hover { border-color: #555; }
+
+        .fav-thumb--slot {
+            border: 2px dashed #3a3a3a;
+            transition: border-color 0.15s;
+            padding: 8px;
+        }
+        .fav-thumb--slot:hover { border-color: #777; }
+
+        .fav-thumb--ai {
+            border: none;
+            transition: border-color 0.15s;
+        }
+        .fav-thumb--ai:hover { border-color: #555; }
+
+        .fav-thumb--toy { flex-direction: column; height: auto; transition: opacity 0.15s; }
+        .fav-thumb--toy .toy-label {
+            font-size: 9px; color: #555; text-align: center;
+            font-family: 'ErbosNBP', monospace; letter-spacing: 0.05em;
+            padding: 6px 0 4px;
+        }
+        .fav-thumb--toy.toy-selected .toy-label { color: #fff; }
+        #toySendBar { display: flex; padding: 16px 0 0; width: 100%; }
+        #toySendBtn { width: 100%; }
+
+        .fav-separator {
+            flex: 0 0 2px;
+            width: 2px;
+            height: 30px;
+            background: #2a2a2a;
+            align-self: center;
+            border-radius: 1px;
+        }
+
+        .fav-plus {
+            position: absolute;
+            bottom: 5px;
+            right: 5px;
+            width: 20px;
+            height: 20px;
+            background: #fff;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            pointer-events: none;
+            z-index: 1;
+            box-shadow: 0 0 14px rgba(0, 0, 0, 0.8);
+        }
+        /* ── AI Drawer ─────────────────────────────────────────────────── */
+        #aiDrawer {
+            position: fixed;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%) translateY(100%);
+            width: 100%;
+            max-width: 640px;
+            background: #111;
+            border-top: 1px solid #2a2a2a;
+            box-shadow: 0 -20px 60px rgba(0, 0, 0, 1);
+            border-radius: 16px 16px 0 0;
+            padding: 12px 20px calc(24px + env(safe-area-inset-bottom));
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 100;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        #aiDrawer.open { transform: translateX(-50%) translateY(0); }
+        .ai-handle {
+            width: 36px; height: 4px;
+            background: #333; border-radius: 2px;
+            margin: 0 auto 4px;
+        }
+        .ai-header {
+            display: flex; align-items: center; justify-content: space-between;
+        }
+        .ai-title { font-family: 'ErbosNBP', monospace; font-size: 16px; color: #fff; }
+        #aiCloseBtn {
+            background: none; border: none; cursor: pointer; width: auto;
+            color: #888; font-size: 20px; padding: 4px 8px;
+            font-weight: normal; font-family: 'ErbosNBP', monospace; transition: color 0.15s;
+            user-select: none; -webkit-user-select: none;
+        }
+        #aiCloseBtn:hover { color: #fff; transform: none; opacity: 1; }
+        #aiStatus { font-size: 13px; color: #555; text-align: center; min-height: 18px; }
+        #soundToggleBtn {
+            align-self: flex-end;
+            width: fit-content !important;
+            background: none; border: none; cursor: pointer;
+            padding: 4px; line-height: 0;
+            opacity: 0.5; transition: opacity 0.15s;
+            image-rendering: pixelated;
+            user-select: none; -webkit-user-select: none;
+        }
+        #soundToggleBtn:hover { opacity: 1; }
+        #soundIconCanvas { image-rendering: pixelated; display: block; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Sound toggle row: sits above the matrix -->
+        <button id="soundToggleBtn" type="button"><canvas id="soundIconCanvas" width="48" height="36"></canvas></button>
+
+        <!-- Matrix canvas: shows "hi!" when waiting, live stream when connected -->
+        <canvas id="matrixCanvas" width="325" height="325"></canvas>
+        <!-- Draw canvas: shown in draw mode -->
+        <canvas id="drawCanvas" width="325" height="325"></canvas>
+
+        <!-- Shown while waiting for phone -->
+        <span id="waitingMsg">waiting for phone...</span>
+
+        <!-- Editor UI: hidden until phone connects -->
+        <div id="editorUI" class="hidden">
+            <div class="mode-toggle">
+                <button class="mode-btn active" id="modeText" type="button">
+                    <canvas class="icon-canvas" id="iconText" width="45" height="45"></canvas>
+                </button>
+                <button class="mode-btn" id="modeDraw" type="button">
+                    <canvas class="icon-canvas" id="iconDraw" width="45" height="45"></canvas>
+                </button>
+                <button class="mode-btn" id="modeToys" type="button">
+                    <canvas class="icon-canvas" id="iconToys" width="45" height="45"></canvas>
+                </button>
+            </div>
+
+            <!-- Favorites row — visible in draw mode only -->
+            <div id="favoritesRow" style="display:none;">
+                <div class="fav-scroller" id="favScroller"></div>
+            </div>
+
+            <!-- Toys row — visible in toys mode only -->
+            <div id="toysRow" style="display:none;">
+                <div id="toyScrollerWrap">
+                    <div class="fav-scroller" id="toysScroller"></div>
+                </div>
+            </div>
+
+            <form id="messageForm">
+                <div>
+                    <input
+                        type="text"
+                        id="text"
+                        name="text"
+                        placeholder="Type your message here..."
+                        maxlength="100"
+                        required
+                        autocomplete="off">
+                </div>
+                <button type="submit" id="sendBtn">Send ></button>
+            </form>
+
+            <div class="draw-actions" id="drawActions">
+                <button class="clear-btn" id="clearBtn" type="button">Clear</button>
+                <button class="send-draw-btn" id="sendDrawBtn" type="button">Send ></button>
+            </div>
+
+            <div class="status-bar">
+                <span class="status" id="status">Checking connection...</span>
+                <span class="preview-status" id="previewStatus"></span>
+            </div>
+        </div>
+    </div>
+
+    <div id="aiDrawer">
+        <div class="ai-handle"></div>
+        <div class="ai-header">
+            <span class="ai-title">Generate Glyph</span>
+            <button id="aiCloseBtn">X</button>
+        </div>
+        <input type="text" id="aiPrompt" placeholder="e.g. a heart, letter A, smiley face..." autocomplete="off">
+        <button id="aiGenerateBtn">Generate</button>
+        <div id="aiStatus"></div>
+    </div>
+
+    <script>
+        // ── Pixel art icons ───────────────────────────────────────────────────────────
+        const MSG_ICON = [
+            [0,1,1,1,1,1,1,1,0],
+            [1,1,1,1,1,1,1,1,1],
+            [1,1,1,1,1,1,1,1,1],
+            [1,1,1,1,1,1,1,1,1],
+            [1,1,1,1,1,1,1,1,1],
+            [0,1,1,1,1,1,1,1,0],
+            [0,1,1,0,0,0,0,0,0],
+            [0,1,0,0,0,0,0,0,0],
+            [0,0,0,0,0,0,0,0,0],
+        ];
+
+        const HEART_ICON = [
+            [0,1,1,0,0,0,1,1,0],
+            [1,1,1,1,0,1,1,1,1],
+            [1,1,1,1,1,1,1,1,1],
+            [1,1,1,1,1,1,1,1,1],
+            [0,1,1,1,1,1,1,1,0],
+            [0,0,1,1,1,1,1,0,0],
+            [0,0,0,1,1,1,0,0,0],
+            [0,0,0,0,1,0,0,0,0],
+            [0,0,0,0,0,0,0,0,0],
+        ];
+
+        function drawIcon(canvas, pixels) {
+            const ctx = canvas.getContext('2d');
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            const cellSize = 5, pixelSize = 4;
+            ctx.fillStyle = '#ffffff';
+            for (let y = 0; y < 9; y++)
+                for (let x = 0; x < 9; x++)
+                    if (pixels[y][x]) ctx.fillRect(x * cellSize, y * cellSize, pixelSize, pixelSize);
+        }
+
+        const FLASK_ICON = [
+            [0,0,1,1,1,1,1,0,0],
+            [0,0,0,1,1,1,0,0,0],
+            [0,0,0,1,1,1,0,0,0],
+            [0,0,1,1,1,1,1,0,0],
+            [0,1,1,1,1,1,1,1,0],
+            [1,1,1,1,1,1,1,1,1],
+            [1,1,1,1,1,1,1,1,1],
+            [1,1,1,1,1,1,1,1,1],
+            [0,1,1,1,1,1,1,1,0],
+        ];
+
+        drawIcon(document.getElementById('iconText'), MSG_ICON);
+        drawIcon(document.getElementById('iconDraw'), HEART_ICON);
+        drawIcon(document.getElementById('iconToys'), FLASK_ICON);
+
+        // ── Constants ─────────────────────────────────────────────────────────────────
+        const PHONE_MASK = [
+            "xxxx.....xxxx",
+            "xx.........xx",
+            "x...........x",
+            "x...........x",
+            ".............",
+            ".............",
+            ".............",
+            ".............",
+            ".............",
+            "x...........x",
+            "x...........x",
+            "xx.........xx",
+            "xxxx.....xxxx",
+        ];
+
+        const HI_PIXELS =
+          '0000000000000' +
+          '0000000000000' +
+          '0000000000000' +
+          '0000000000000' +
+          '0001000101000' +
+          '0001000001000' +
+          '0001100101000' +
+          '0001010100000' +
+          '0001010101000' +
+          '0000000000000' +
+          '0000000000000' +
+          '0000000000000' +
+          '0000000000000';
+
+        // ── DOM refs ──────────────────────────────────────────────────────────────────
+        const editorUI     = document.getElementById('editorUI');
+        const waitingMsg   = document.getElementById('waitingMsg');
+        const statusEl     = document.getElementById('status');
+        const messageArea  = document.getElementById('messageArea');
+        const previewStatus = document.getElementById('previewStatus');
+        const matrixCanvas = document.getElementById('matrixCanvas');
+        const drawCanvas   = document.getElementById('drawCanvas');
+        const messageForm  = document.getElementById('messageForm');
+        const drawActions  = document.getElementById('drawActions');
+        const modeTextBtn  = document.getElementById('modeText');
+        const modeDrawBtn  = document.getElementById('modeDraw');
+        const modeToysBtn  = document.getElementById('modeToys');
+
+        matrixCanvas.style.width  = '325px';
+        matrixCanvas.style.height = '325px';
+        drawCanvas.style.width    = '325px';
+        drawCanvas.style.height   = '325px';
+
+        const ctx  = matrixCanvas.getContext('2d');
+        const dCtx = drawCanvas.getContext('2d');
+
+        // ── State ─────────────────────────────────────────────────────────────────────
+        let currentMode     = 'text';
+        let phoneConnected  = false;
+        let ws              = null;
+        let reconnectTimer  = null;
+        let statusMisses    = 0;
+        let selectedToyId   = null;
+        let runningToyId    = null;
+
+        // ── Waiting / connected views ─────────────────────────────────────────────────
+        function showWaiting() {
+            phoneConnected = false;
+            editorUI.classList.add('hidden');
+            setAiSlotVisible(false);
+            runningToyId = null; refreshToyCards();
+            waitingMsg.style.display = 'block';
+            matrixCanvas.style.display = 'block';
+            drawCanvas.style.display = 'none';
+            drawMatrix(HI_PIXELS);
+        }
+
+        function showEditor() {
+            phoneConnected = true;
+            waitingMsg.style.display = 'none';
+            editorUI.classList.remove('hidden');
+            if (currentMode === 'text') {
+                matrixCanvas.style.display = 'block';
+                drawCanvas.style.display = 'none';
+                messageForm.style.display = 'flex';
+                drawActions.style.display = 'none';
+                document.getElementById('favoritesRow').style.display = 'none';
+                document.getElementById('toysRow').style.display = 'none';
+            } else if (currentMode === 'draw') {
+                matrixCanvas.style.display = 'none';
+                drawCanvas.style.display = 'block';
+                messageForm.style.display = 'none';
+                drawActions.style.display = 'flex';
+                document.getElementById('toysRow').style.display = 'none';
+                _syncFavRow();
+            } else {
+                matrixCanvas.style.display = 'block';
+                drawCanvas.style.display = 'none';
+                messageForm.style.display = 'none';
+                drawActions.style.display = 'none';
+                document.getElementById('favoritesRow').style.display = 'none';
+                document.getElementById('toysRow').style.display = 'block';
+                updateToysClip();
+            }
+        }
+
+        // ── Matrix renderer ───────────────────────────────────────────────────────────
+        function drawMatrix(pixels) {
+            const size = matrixCanvas.width;
+            const cellSize = size / 13;
+            const gap = cellSize * 0.15;
+            const pixelSize = cellSize - gap;
+
+            ctx.fillStyle = '#000';
+            ctx.fillRect(0, 0, size, size);
+
+            for (let y = 0; y < 13; y++) {
+                for (let x = 0; x < 13; x++) {
+                    if (PHONE_MASK[y][x] === 'x') continue;
+                    const on = pixels[y * 13 + x] === '1';
+                    ctx.fillStyle = on ? '#ffffff' : '#1c1c1c';
+                    ctx.fillRect(
+                        x * cellSize + gap / 2,
+                        y * cellSize + gap / 2,
+                        pixelSize,
+                        pixelSize
+                    );
+                }
+            }
+        }
+
+        // ── Live preview + connection management ──────────────────────────────────────
+        function connectPreview() {
+            if (reconnectTimer) { clearTimeout(reconnectTimer); reconnectTimer = null; }
+
+            fetch(`/${window.PHONE_ID}/api/status`)
+                .then(res => res.json())
+                .then(data => {
+                    if (data.connected > 0) {
+                        if (!phoneConnected) showEditor();
+                        statusMisses = 0;
+                        statusEl.textContent = '✓ Connected';
+                        setAiSlotVisible(!!data.aiEnabled);
+                        if (data.activeToy !== undefined) { runningToyId = data.activeToy; refreshToyCards(); }
+
+                        if (ws && ws.readyState <= WebSocket.OPEN) return; // already streaming
+
+                        const proto = location.protocol === 'https:' ? 'wss' : 'ws';
+                        const wsUrl = `${proto}://${location.host}/stream/${window.PHONE_ID}`;
+                        previewStatus.textContent = 'Connecting to stream...';
+                        ws = new WebSocket(wsUrl);
+
+                        ws.onopen = () => {
+                            previewStatus.textContent = '✓ Live';
+                        };
+                        ws.onmessage = (event) => {
+                            try {
+                                const msg = JSON.parse(event.data);
+                                if (msg.type === 'frame' && msg.pixels) drawMatrix(msg.pixels);
+                            } catch (e) {}
+                        };
+                        ws.onerror = () => {
+                            previewStatus.textContent = '✗ Stream failed';
+                        };
+                        ws.onclose = () => {
+                            previewStatus.textContent = '';
+                            ws = null;
+                            reconnectTimer = setTimeout(connectPreview, 8000);
+                        };
+                    } else {
+                        statusMisses++;
+                        if (statusMisses >= 2) {
+                            if (ws) { ws.close(); ws = null; }
+                            showWaiting();
+                        }
+                        reconnectTimer = setTimeout(connectPreview, 8000);
+                    }
+                })
+                .catch(() => {
+                    statusMisses++;
+                    if (statusMisses >= 2) {
+                        if (ws) { ws.close(); ws = null; }
+                        showWaiting();
+                    }
+                    reconnectTimer = setTimeout(connectPreview, 8000);
+                });
+        }
+
+        // ── Status polling (updates text while connected) ─────────────────────────────
+        async function checkStatus() {
+            if (!phoneConnected) return; // connectPreview handles disconnected state
+            try {
+                const res = await fetch(`/${window.PHONE_ID}/api/status`);
+                const data = await res.json();
+                if (data.connected > 0) {
+                    statusMisses = 0;
+                    statusEl.textContent = '✓ Connected';
+                    setAiSlotVisible(!!data.aiEnabled);
+                    if (data.activeToy !== undefined) { runningToyId = data.activeToy; refreshToyCards(); }
+                } else {
+                    statusMisses++;
+                    if (statusMisses >= 2) {
+                        showWaiting();
+                        connectPreview();
+                    }
+                }
+            } catch (e) {
+                statusEl.textContent = '✗ Server unavailable';
+            }
+        }
+
+        function setAiSlotVisible(visible) {
+            const slot = document.getElementById('favAiSlot');
+            const sep = document.getElementById('favSeparator');
+            if (slot) slot.style.display = visible ? '' : 'none';
+            if (sep) sep.style.display = visible ? '' : 'none';
+            if (!visible) {
+                const drawer = document.getElementById('aiDrawer');
+                if (drawer) drawer.classList.remove('open');
+            }
+        }
+
+        function showMessage(text, type) {
+            const area = document.getElementById('messageArea');
+            area.innerHTML = `<div class="message ${type}">${text}</div>`;
+            setTimeout(() => { area.innerHTML = ''; }, 3000);
+        }
+
+        // ── Mode toggle ───────────────────────────────────────────────────────────────
+        modeTextBtn.addEventListener('click', () => {
+            currentMode = 'text';
+            [modeTextBtn, modeDrawBtn, modeToysBtn].forEach(b => b.classList.remove('active'));
+            modeTextBtn.classList.add('active');
+            matrixCanvas.style.display = 'block';
+            drawCanvas.style.display = 'none';
+            messageForm.style.display = 'flex';
+            drawActions.style.display = 'none';
+            document.getElementById('favoritesRow').style.display = 'none';
+            document.getElementById('toysRow').style.display = 'none';
+            drawPixels.fill(0);
+            playToggle();
+        });
+
+        modeDrawBtn.addEventListener('click', () => {
+            currentMode = 'draw';
+            [modeTextBtn, modeDrawBtn, modeToysBtn].forEach(b => b.classList.remove('active'));
+            modeDrawBtn.classList.add('active');
+            matrixCanvas.style.display = 'none';
+            drawCanvas.style.display = 'block';
+            messageForm.style.display = 'none';
+            drawActions.style.display = 'flex';
+            document.getElementById('toysRow').style.display = 'none';
+            drawPixels.fill(0);
+            renderDrawCanvas();
+            _syncFavRow();
+            playToggle();
+        });
+
+        modeToysBtn.addEventListener('click', () => {
+            currentMode = 'toys';
+            [modeTextBtn, modeDrawBtn, modeToysBtn].forEach(b => b.classList.remove('active'));
+            modeToysBtn.classList.add('active');
+            matrixCanvas.style.display = 'block';
+            drawCanvas.style.display = 'none';
+            messageForm.style.display = 'none';
+            drawActions.style.display = 'none';
+            document.getElementById('favoritesRow').style.display = 'none';
+            document.getElementById('toysRow').style.display = 'block';
+            updateToysClip();
+            playToggle();
+        });
+
+        // ── Text mode ─────────────────────────────────────────────────────────────────
+        const textInput = document.getElementById('text');
+        const sendBtn   = document.getElementById('sendBtn');
+
+        document.getElementById('messageForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const text = textInput.value.trim();
+            if (!text) return;
+            if (text.length > 100) { showMessage('Message too long (max 100 chars)', 'error'); return; }
+
+            sendBtn.disabled = true;
+            sendBtn.textContent = 'Sending...';
+            if (runningToyId) await apiToyStop();
+
+            try {
+                const res = await fetch(`/${window.PHONE_ID}/api/send`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ text, speed: 20 })
+                });
+                const data = await res.json();
+                if (data.success) {
+                    showMessage('Sent!', 'success');
+                    textInput.value = '';
+                } else {
+                    showMessage((data.error || 'Failed to send'), 'error');
+                }
+            } catch (e) {
+                showMessage('Connection error', 'error');
+            } finally {
+                sendBtn.disabled = false;
+                sendBtn.textContent = 'Send';
+                checkStatus();
+            }
+        });
+
+        // ── Draw mode ─────────────────────────────────────────────────────────────────
+        const drawPixels = new Array(169).fill(0);
+        let isPointerDown = false;
+        let paintValue = 1;
+
+        function getCellFromEvent(e) {
+            const rect = drawCanvas.getBoundingClientRect();
+            const scaleX = drawCanvas.width / rect.width;
+            const scaleY = drawCanvas.height / rect.height;
+            const px = (e.clientX - rect.left) * scaleX;
+            const py = (e.clientY - rect.top) * scaleY;
+            const cellSize = drawCanvas.width / 13;
+            const cx = Math.floor(px / cellSize);
+            const cy = Math.floor(py / cellSize);
+            if (cx < 0 || cx >= 13 || cy < 0 || cy >= 13) return null;
+            if (PHONE_MASK[cy][cx] === 'x') return null;
+            return { x: cx, y: cy, idx: cy * 13 + cx };
+        }
+
+        function renderDrawCanvas() {
+            const size = drawCanvas.width;
+            const cellSize = size / 13;
+            const gap = cellSize * 0.15;
+            const pixelSize = cellSize - gap;
+
+            dCtx.fillStyle = '#000';
+            dCtx.fillRect(0, 0, size, size);
+
+            for (let y = 0; y < 13; y++) {
+                for (let x = 0; x < 13; x++) {
+                    if (PHONE_MASK[y][x] === 'x') continue;
+                    dCtx.fillStyle = drawPixels[y * 13 + x] ? '#ffffff' : '#1c1c1c';
+                    dCtx.fillRect(
+                        x * cellSize + gap / 2,
+                        y * cellSize + gap / 2,
+                        pixelSize,
+                        pixelSize
+                    );
+                }
+            }
+            updateSaveSlot();
+        }
+
+        drawCanvas.addEventListener('pointerdown', (e) => {
+            e.preventDefault();
+            drawCanvas.setPointerCapture(e.pointerId);
+            isPointerDown = true;
+            const cell = getCellFromEvent(e);
+            if (cell) {
+                paintValue = drawPixels[cell.idx] ? 0 : 1;
+                drawPixels[cell.idx] = paintValue;
+                playToggle();
+                renderDrawCanvas();
+            }
+        });
+
+        drawCanvas.addEventListener('pointermove', (e) => {
+            if (!isPointerDown) return;
+            e.preventDefault();
+            const cell = getCellFromEvent(e);
+            if (cell && drawPixels[cell.idx] !== paintValue) {
+                drawPixels[cell.idx] = paintValue;
+                playToggle();
+                renderDrawCanvas();
+            }
+        });
+
+        drawCanvas.addEventListener('pointerup',     () => { isPointerDown = false; });
+        drawCanvas.addEventListener('pointercancel', () => { isPointerDown = false; });
+
+        document.getElementById('clearBtn').addEventListener('click', () => {
+            drawPixels.fill(0);
+            renderDrawCanvas();
+        });
+
+        const sendDrawBtn = document.getElementById('sendDrawBtn');
+        sendDrawBtn.addEventListener('click', async () => {
+            sendDrawBtn.disabled = true;
+            sendDrawBtn.textContent = 'Sending...';
+            if (runningToyId) await apiToyStop();
+
+            try {
+                const res = await fetch(`/${window.PHONE_ID}/api/draw`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ pixels: drawPixels.join('') })
+                });
+                const data = await res.json();
+                if (data.success) {
+                    showMessage('Sent!', 'success');
+                } else {
+                    showMessage((data.error || 'Failed to send'), 'error');
+                }
+            } catch (e) {
+                showMessage('Connection error', 'error');
+            } finally {
+                sendDrawBtn.disabled = false;
+                sendDrawBtn.textContent = 'Send >';
+                checkStatus();
+            }
+        });
+
+        // ── Favorites ─────────────────────────────────────────────────────────────
+        let _cachedFavs = [];
+
+        async function fetchFavs() {
+            try {
+                const res = await fetch(`/${window.PHONE_ID}/api/favorites`);
+                const data = await res.json();
+                _cachedFavs = data.favorites || [];
+            } catch { _cachedFavs = []; }
+        }
+
+        function renderThumb(canvas, pixels) {
+            const size = canvas.width;
+            const ctx = canvas.getContext('2d');
+            const cellSize = size / 13;
+            const gap = cellSize * 0.15;
+            const ps = cellSize - gap;
+            ctx.fillStyle = '#000';
+            ctx.fillRect(0, 0, size, size);
+            for (let y = 0; y < 13; y++) {
+                for (let x = 0; x < 13; x++) {
+                    if (PHONE_MASK[y][x] === 'x') continue;
+                    const on = typeof pixels === 'string' ? pixels[y*13+x]==='1' : !!pixels[y*13+x];
+                    ctx.fillStyle = on ? '#fff' : '#1c1c1c';
+                    ctx.fillRect(x*cellSize + gap/2, y*cellSize + gap/2, ps, ps);
+                }
+            }
+        }
+
+        function _buildSaveSlot() {
+            const slot = document.createElement('button');
+            slot.id = 'favSaveSlot';
+            slot.className = 'fav-thumb fav-thumb--slot';
+            slot.title = 'Save to favorites';
+            const c = document.createElement('canvas');
+            c.width = 80; c.height = 80;
+            slot.appendChild(c);
+            const plus = document.createElement('span');
+            plus.className = 'fav-plus';
+            plus.innerHTML = '<svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M5 1v8M1 5h8" stroke="#000" stroke-width="2" stroke-linecap="round"/></svg>';
+            slot.appendChild(plus);
+            slot.addEventListener('click', saveFavorite);
+            return slot;
+        }
+
+        function _buildFavItem(pixels, idx) {
+            const item = document.createElement('button');
+            item.className = 'fav-thumb fav-thumb--saved';
+            item.title = 'Tap to load · Hold to delete';
+            const c = document.createElement('canvas');
+            c.width = 80; c.height = 80;
+            renderThumb(c, pixels);
+            item.appendChild(c);
+            item.addEventListener('click', () => { loadFavorite(pixels); playToggle(); });
+            item.addEventListener('contextmenu', (e) => {
+                e.preventDefault();
+                deleteFavorite(idx);
+                playButton();
+            });
+            return item;
+        }
+
+        async function deleteFavorite(idx) {
+            try {
+                const res = await fetch(`/${window.PHONE_ID}/api/favorites/${idx}`, { method: 'DELETE' });
+                const data = await res.json();
+                if (data.success) {
+                    _cachedFavs = data.favorites;
+                    _rebuildFavItems();
+                    _syncFavRow();
+                }
+            } catch {}
+        }
+
+        async function saveFavorite() {
+            if (!drawPixels.some(v => v === 1)) return;
+            try {
+                const res = await fetch(`/${window.PHONE_ID}/api/favorites`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ pixels: drawPixels.join('') })
+                });
+                const data = await res.json();
+                if (data.success) {
+                    _cachedFavs = data.favorites;
+                    _rebuildFavItems();
+                    _syncFavRow();
+                    playToggle();
+                }
+            } catch {}
+        }
+
+        function loadFavorite(pixels) {
+            for (let i = 0; i < 169; i++) drawPixels[i] = pixels[i] === '1' ? 1 : 0;
+            renderDrawCanvas();
+        }
+
+        let _prevShowSlot = false;
+
+        function _shouldShowSlot() {
+            if (!drawPixels.some(v => v === 1)) return false;
+            const pixels = drawPixels.join('');
+            return !_cachedFavs.includes(pixels);
+        }
+
+        function updateFavClip() {
+            const s = document.getElementById('favScroller');
+            const row = document.getElementById('favoritesRow');
+            if (!s || !row) return;
+            const desktop = window.innerWidth >= 520;
+            const clipped = desktop
+                ? s.scrollHeight > s.clientHeight + 1 && s.scrollTop + s.clientHeight < s.scrollHeight - 1
+                : s.scrollWidth  > s.clientWidth  + 1 && s.scrollLeft + s.clientWidth  < s.scrollWidth  - 1;
+            row.classList.toggle('fav-clipped', clipped);
+        }
+
+        function updateToysClip() {
+            const s = document.getElementById('toysScroller');
+            const wrap = document.getElementById('toyScrollerWrap');
+            if (!s || !wrap) return;
+            const desktop = window.innerWidth >= 520;
+            const clipped = desktop
+                ? s.scrollHeight > s.clientHeight + 1 && s.scrollTop + s.clientHeight < s.scrollHeight - 1
+                : s.scrollWidth  > s.clientWidth  + 1 && s.scrollLeft + s.clientWidth  < s.scrollWidth  - 1;
+            wrap.classList.toggle('fav-clipped', clipped);
+        }
+
+        function _syncFavRow() {
+            const showSlot = _shouldShowSlot();
+            _prevShowSlot = showSlot;
+            const row = document.getElementById('favoritesRow');
+            const scroller = document.getElementById('favScroller');
+            if (currentMode !== 'draw') { row.style.display = 'none'; return; }
+            row.style.display = ''; // AI slot always present
+            let slot = document.getElementById('favSaveSlot');
+            if (showSlot && !slot) {
+                slot = _buildSaveSlot();
+                scroller.insertBefore(slot, document.getElementById('favSeparator').nextSibling);
+                renderThumb(slot.querySelector('canvas'), drawPixels);
+            } else if (!showSlot && slot) {
+                slot.remove();
+            }
+            requestAnimationFrame(() => requestAnimationFrame(updateFavClip));
+        }
+
+        function updateSaveSlot() {
+            const showSlot = _shouldShowSlot();
+            if (showSlot !== _prevShowSlot) { _syncFavRow(); return; }
+            if (showSlot) {
+                const c = document.querySelector('#favSaveSlot canvas');
+                if (c) renderThumb(c, drawPixels);
+            }
+        }
+
+        function _rebuildFavItems() {
+            const scroller = document.getElementById('favScroller');
+            scroller.querySelectorAll('.fav-thumb--saved').forEach(el => el.remove());
+            _cachedFavs.forEach((p, i) => scroller.appendChild(_buildFavItem(p, i)));
+        }
+
+        async function rebuildFavList() {
+            await fetchFavs();
+            _rebuildFavItems();
+            _syncFavRow();
+        }
+
+        // ── AI Generator ──────────────────────────────────────────────────────────────
+        const SPARKLE_PIXELS =
+            '0000001000000' +
+            '0000001000000' +
+            '0000001000000' +
+            '0000011100000' +
+            '0000011100000' +
+            '0001111111000' +
+            '0111111111110' +
+            '0001111111000' +
+            '0000011100000' +
+            '0000011100000' +
+            '0000001000000' +
+            '0000001000000' +
+            '0000001000000';
+
+        function _buildAiSlot() {
+            const btn = document.createElement('button');
+            btn.id = 'favAiSlot';
+            btn.className = 'fav-thumb fav-thumb--ai';
+            btn.title = 'Generate with AI';
+            const c = document.createElement('canvas');
+            c.width = 80; c.height = 80;
+            renderThumb(c, SPARKLE_PIXELS);
+            btn.appendChild(c);
+            btn.addEventListener('click', () => {
+                document.getElementById('aiDrawer').classList.add('open');
+                setTimeout(() => document.getElementById('aiPrompt').focus(), 300);
+            });
+            return btn;
+        }
+
+        async function generateGlyph() {
+            const promptEl = document.getElementById('aiPrompt');
+            const prompt = promptEl.value.trim();
+            if (!prompt) return;
+            const btn = document.getElementById('aiGenerateBtn');
+            const status = document.getElementById('aiStatus');
+            btn.disabled = true;
+            btn.textContent = 'Generating...';
+            status.textContent = '';
+            try {
+                const res = await fetch(`/${window.PHONE_ID}/api/generate`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ prompt })
+                });
+                const data = await res.json();
+                if (data.success) {
+                    loadFavorite(data.pixels);
+                    status.textContent = 'Loaded — save or send it';
+                } else {
+                    status.textContent = (data.error || 'Failed');
+                }
+            } catch { status.textContent = 'Connection error'; }
+            finally {
+                btn.disabled = false;
+                btn.textContent = 'Generate';
+            }
+        }
+
+        document.getElementById('aiCloseBtn').addEventListener('click', () => {
+            document.getElementById('aiDrawer').classList.remove('open');
+        });
+        document.getElementById('aiGenerateBtn').addEventListener('click', generateGlyph);
+        document.getElementById('aiPrompt').addEventListener('keydown', e => {
+            if (e.key === 'Enter') generateGlyph();
+        });
+
+        // ── Sounds ───────────────────────────────────────────────────────────────────
+        const sndToggle = new Audio('/ClickyButton4.m4a');
+        const sndButton = new Audio('/Mechanical_2_9.m4a');
+
+        // Speaker pixel art: 12 cols × 9 rows, 4px per pixel → 48×36 canvas
+        const SND_COLS = 12, SND_ROWS = 9, SND_PS = 4;
+        const SND_ON =
+            '000001000010' +
+            '000011010001' +
+            '000111001001' +
+            '111111001001' +
+            '111111001001' +
+            '111111001001' +
+            '000111001001' +
+            '000011010001' +
+            '000001000010';
+        const SND_OFF =
+            '000001000000' +
+            '000011000000' +
+            '000111000000' +
+            '111111000000' +
+            '111111000000' +
+            '111111000000' +
+            '000111000000' +
+            '000011000000' +
+            '000001000000';
+
+        function drawSoundIcon(on) {
+            const canvas = document.getElementById('soundIconCanvas');
+            const ctx = canvas.getContext('2d');
+            const px = on ? SND_ON : SND_OFF;
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = '#fff';
+            for (let r = 0; r < SND_ROWS; r++) {
+                for (let c = 0; c < SND_COLS; c++) {
+                    if (px[r * SND_COLS + c] === '1')
+                        ctx.fillRect(c * SND_PS, r * SND_PS, SND_PS, SND_PS);
+                }
+            }
+        }
+
+        let soundEnabled = localStorage.getItem('soundEnabled') !== 'false';
+        const soundToggleBtn = document.getElementById('soundToggleBtn');
+        drawSoundIcon(soundEnabled);
+        soundToggleBtn.addEventListener('click', () => {
+            soundEnabled = !soundEnabled;
+            localStorage.setItem('soundEnabled', soundEnabled);
+            drawSoundIcon(soundEnabled);
+        });
+
+        function playToggle() { if (soundEnabled) sndToggle.cloneNode().play().catch(() => {}); }
+        function playButton() { if (soundEnabled) sndButton.cloneNode().play().catch(() => {}); }
+
+        modeTextBtn.addEventListener('click', playToggle);
+        modeDrawBtn.addEventListener('click', playToggle);
+
+        document.getElementById('sendBtn').addEventListener('click', playButton);
+        document.getElementById('clearBtn').addEventListener('click', playButton);
+        document.getElementById('sendDrawBtn').addEventListener('click', playButton);
+
+        // ── Toys ──────────────────────────────────────────────────────────────────────
+        async function apiToyStart(id) {
+            const btn = document.getElementById('toySendBtn');
+            if (btn) { btn.disabled = true; btn.textContent = 'Sending...'; }
+            try {
+                const res = await fetch(`/${window.PHONE_ID}/api/toy/start`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ id })
+                });
+                const j = await res.json();
+                if (j.success) {
+                    runningToyId = id; selectedToyId = null; refreshToyCards();
+                    showMessage('Sent!', 'success');
+                    playButton();
+                } else showMessage(j.error || 'Failed', 'error');
+            } catch { showMessage('Connection error', 'error'); }
+            finally { if (btn) { btn.textContent = 'Send >'; refreshToyCards(); } }
+        }
+
+        async function apiToyStop() {
+            if (!runningToyId) return;
+            try {
+                await fetch(`/${window.PHONE_ID}/api/toy/stop`, { method: 'POST' });
+            } catch {}
+            runningToyId = null;
+            refreshToyCards();
+        }
+
+        function refreshToyCards() {
+            document.querySelectorAll('.fav-thumb--toy').forEach(b => {
+                const sel = b.dataset.toyId === selectedToyId;
+                b.classList.toggle('toy-selected', sel);
+                b.style.opacity = selectedToyId ? (sel ? '1' : '0.35') : '1';
+            });
+            const sendBtn = document.getElementById('toySendBtn');
+            if (sendBtn) sendBtn.disabled = !selectedToyId || !phoneConnected;
+        }
+
+        // Preview pixel strings (169 chars, 13×13)
+        const PREVIEW_LIFE =
+            '0000000000000' + '0000100100000' + '0001011010000' + '0000100100000' +
+            '0000000000000' + '0001110000000' + '0001010000000' + '0001110000000' +
+            '0000000000000' + '0000000110000' + '0000000100000' + '0000000110000' +
+            '0000000000000';
+        const PREVIEW_RAIN =
+            '0000100010001' + '0100100010001' + '0100100010001' + '0100000010000' +
+            '0100010010000' + '0000010010010' + '0001010000010' + '0001010000010' +
+            '0001000001010' + '0000000001010' + '0000000001010' + '0000000001000' +
+            '0000000000000';
+
+        const PREVIEW_BRAIN =
+            '0000000000000' + '0001100000000' + '0000100000000' + '0001000000000' +
+            '0000000000000' + '0000001100000' + '0000000100000' + '0000001000000' +
+            '0000000000000' + '0000000011000' + '0000000001000' + '0000000010000' +
+            '0000000000000';
+        const PREVIEW_CYCLIC =
+            '0000111110000' + '0011000001100' + '0100000000010' + '0100000000010' +
+            '1000011100001' + '1000100010001' + '1000100010001' + '1000100010001' +
+            '1000011100001' + '0100000000010' + '0100000000010' + '0011000001100' +
+            '0000111110000';
+        const PREVIEW_ISING =
+            '0001111110000' + '0011111111000' + '0111111111100' + '1111100011110' +
+            '1111000001111' + '1110000000111' + '1110000000111' + '1111000001111' +
+            '1111100011110' + '0111111111100' + '0011111111000' + '0001111110000' +
+            '0000000000000';
+        const PREVIEW_ANTS =
+            '0000000010000' + '0100001110000' + '0101101000000' + '0101001011000' +
+            '0001001010000' + '0001111010000' + '0010000010000' + '0010001110000' +
+            '0110001000000' + '0100001001000' + '0000001011000' + '0000001010000' +
+            '0000000000000';
+        const PREVIEW_DAYNIGHT =
+            '0000101010000' + '0011001100110' + '0110011001100' + '0110011001100' +
+            '1001100110011' + '1001100110011' + '0110011001100' + '0110011001100' +
+            '1001100110011' + '1001100110011' + '0110011001100' + '0011001100110' +
+            '0000101010000';
+        const PREVIEW_WATOR =
+            '0000010000000' + '0010000100000' + '0000010000000' + '0100000010100' +
+            '0000111100000' + '0001111110000' + '0001111110000' + '0000111100000' +
+            '0010000010000' + '0000100000100' + '0001000010000' + '0000010000100' +
+            '0000001000000';
+
+        const TOYS = [
+            { id: 'gol',     name: 'Life',    preview: PREVIEW_LIFE },
+            { id: 'rain',    name: 'Rain',    preview: PREVIEW_RAIN },
+            { id: 'brain',   name: 'Brain',   preview: PREVIEW_BRAIN },
+            { id: 'cyclic',  name: 'Cyclic',  preview: PREVIEW_CYCLIC },
+            { id: 'ising',    name: 'Ising',    preview: PREVIEW_ISING },
+            { id: 'ants',     name: 'Ants',     preview: PREVIEW_ANTS },
+            { id: 'daynight', name: 'Day/Night', preview: PREVIEW_DAYNIGHT },
+            { id: 'wator',    name: 'Wa-Tor',   preview: PREVIEW_WATOR },
+        ];
+
+        function _buildToysRow() {
+            const scr = document.getElementById('toysScroller');
+            const row = document.getElementById('toysRow');
+            TOYS.forEach(def => {
+                const btn = document.createElement('button');
+                btn.className = 'fav-thumb fav-thumb--toy';
+                btn.dataset.toyId = def.id;
+                btn.title = def.name;
+                const c = document.createElement('canvas');
+                c.width = 80; c.height = 80;
+                renderThumb(c, def.preview);
+                const lbl = document.createElement('div');
+                lbl.className = 'toy-label';
+                lbl.textContent = def.name;
+                btn.appendChild(c);
+                btn.appendChild(lbl);
+                btn.addEventListener('click', () => {
+                    selectedToyId = selectedToyId === def.id ? null : def.id;
+                    refreshToyCards();
+                });
+                scr.appendChild(btn);
+            });
+
+            const bar = document.createElement('div');
+            bar.id = 'toySendBar';
+            const sendBtn = document.createElement('button');
+            sendBtn.id = 'toySendBtn';
+            sendBtn.textContent = 'Send >';
+            sendBtn.disabled = true;
+            sendBtn.addEventListener('click', () => { if (selectedToyId) apiToyStart(selectedToyId); });
+            bar.appendChild(sendBtn);
+            row.appendChild(bar);
+        }
+
+        // ── Init ──────────────────────────────────────────────────────────────────────
+        showWaiting();
+        connectPreview();
+        setInterval(checkStatus, 10000);
+        _buildToysRow();
+        const sep = document.createElement('div');
+        sep.id = 'favSeparator';
+        sep.className = 'fav-separator';
+        const scr = document.getElementById('favScroller');
+        scr.appendChild(_buildAiSlot());
+        scr.appendChild(sep);
+        rebuildFavList();
+        document.getElementById('favScroller').addEventListener('scroll', updateFavClip, { passive: true });
+        document.getElementById('toysScroller').addEventListener('scroll', updateToysClip, { passive: true });
+        window.addEventListener('resize', () => { updateFavClip(); updateToysClip(); }, { passive: true });
+
+        window.addEventListener('beforeunload', () => {
+            if (ws) ws.close();
+            if (reconnectTimer) clearTimeout(reconnectTimer);
+        });
+
+        if ('serviceWorker' in navigator) navigator.serviceWorker.register('/sw.js');
+</script>
+<div id="messageArea"></div>
+</body>
+</html>

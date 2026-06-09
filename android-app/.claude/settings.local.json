@@ -1,0 +1,20 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(./gradlew clean:*)",
+      "Bash(./gradlew assembleDebug:*)",
+      "Bash(adb install:*)",
+      "Bash(convert:*)",
+      "Bash(curl:*)",
+      "Bash(adb logcat:*)",
+      "Bash(npm install:*)",
+      "Bash(npm start)",
+      "Bash(ipconfig:*)",
+      "Bash(findstr:*)",
+      "Bash(d:/TEMP/glyph/platform-tools/adb.exe devices:*)",
+      "Bash(d:/TEMP/glyph/platform-tools/adb.exe logcat:*)",
+      "Bash(./gradlew installDebug)",
+      "Bash(Remove-Item \"d:\\\\TEMP\\\\glyph\\\\android-app\\\\app\\\\src\\\\main\\\\java\\\\com\\\\sajenko\\\\glyphtoys\\\\api\\\\HardwareApiService.kt\")"
+    ]
+  }
+}
