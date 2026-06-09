@@ -20,12 +20,7 @@ The Android app runs as an AOD toy on the phone and maintains a persistent WebSo
 
 ### `android-app/`
 
-Kotlin app for Nothing Phone (4a) Pro. Registers as a Glyph Toy, connects to the relay server, and drives the 13×13 LED matrix. Also includes built-in display modes that run independently:
-
-- **Clock** — 4×5 pixel digital time
-- **Equalizer** — audio-reactive bars, 13 columns
-- **Call indicator** — phone icon during active calls
-- **Custom images** — pixel art you draw in the app
+Kotlin app for Nothing Phone (4a) Pro. Registers as a Glyph Toy, connects to the relay server, and drives the 13×13 LED matrix.
 
 See [android-app/BUILD.md](android-app/BUILD.md) for build instructions.
 
