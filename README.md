@@ -37,15 +37,19 @@ Install the Android app, point it at a relay server, and anyone with the link ca
 ## Setup
 
 1. [Download and install the APK](https://github.com/alexmicuplusfour/hi-glyph/releases/latest/download/app-debug.apk) — the app connects to `higlyph.app` automatically and gives you a personal URL to share
-2. In phone Settings, go to **Glyph Interface → Flip to Glyph** and enable **Always-on Glyph Toy**
-3. Select **hi! glyph** from the toy list
+2. Go to **Settings → Apps → hi! glyph → App battery usage** — enable **Allow background usage** and set it to **Unrestricted** (required to keep the relay connection alive)
+3. Go to **Settings → Glyph Interface → Flip to Glyph** — enable **Always-on Glyph Toy** and select **hi! glyph**
 
 <table>
   <tr>
-    <td><img src="screenshots/config/Screenshot_20260610-031703.png" width="260"/></td>
-    <td><img src="screenshots/config/Screenshot_20260610-031709.png" width="260"/></td>
+    <td><img src="screenshots/config/Screenshot_20260610-033335.png" width="220"/></td>
+    <td><img src="screenshots/config/Screenshot_20260610-033323.png" width="220"/></td>
+    <td><img src="screenshots/config/Screenshot_20260610-031703.png" width="220"/></td>
+    <td><img src="screenshots/config/Screenshot_20260610-031709.png" width="220"/></td>
   </tr>
   <tr>
+    <td align="center">Allow background usage</td>
+    <td align="center">Set to Unrestricted</td>
     <td align="center">Enable Always-on Glyph Toy</td>
     <td align="center">Select hi! glyph</td>
   </tr>
