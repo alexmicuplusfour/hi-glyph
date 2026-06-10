@@ -1,6 +1,6 @@
 # hi! glyph
 
-[![Download APK](https://img.shields.io/github/v/release/alexmicuplusfour/hi-glyph?label=download%20apk&logo=android)](https://github.com/alexmicuplusfour/hi-glyph/releases/latest/download/app-debug.apk)
+[![Download APK](https://img.shields.io/github/v/release/alexmicuplusfour/hi-glyph?label=download%20apk&logo=android)](https://github.com/alexmicuplusfour/hi-glyph/releases/latest/download/hi-glyph.apk)
 
 Control the Nothing Phone (4a) Pro's 13×13 LED matrix from any browser, anywhere.
 
@@ -36,7 +36,7 @@ Install the Android app, point it at a relay server, and anyone with the link ca
 
 ## Setup
 
-1. [Download and install the APK](https://github.com/alexmicuplusfour/hi-glyph/releases/latest/download/app-debug.apk) — the app connects to `higlyph.app` automatically and gives you a personal URL to share
+1. [Download and install the APK](https://github.com/alexmicuplusfour/hi-glyph/releases/latest/download/hi-glyph.apk) — the app connects to `higlyph.app` automatically and gives you a personal URL to share
 2. Go to **Settings → Apps → hi! glyph → App battery usage** — enable **Allow background usage** and set it to **Unrestricted** (required to keep the relay connection alive)
 3. Go to **Settings → Glyph Interface → Flip to Glyph** — enable **Always-on Glyph Toy** and select **hi! glyph**
 
