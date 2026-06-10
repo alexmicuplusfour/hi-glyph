@@ -233,6 +233,8 @@ const streams = new Map(); // uuid -> Set<WebSocket>
 const activeToys = new Map(); // uuid -> toyId
 // Pending messages awaiting ack: uuid -> Map<msgId, {payload, retries, timer}>
 const pending = new Map();
+// Latest frame per phone — only the most recent is forwarded to browsers
+const latestFrames = new Map(); // uuid -> frame text
 
 const MAX_RETRIES = 3;
 const RETRY_MS = 4000;
@@ -345,11 +347,7 @@ wss.on('connection', (ws, req) => {
       } else if (data.type === 'frame') {
         const clients = streams.get(uuid);
         if (clients && clients.size > 0) {
-          console.log(`[${uuid}] Frame → ${clients.size} stream client(s)`);
-          const text = message.toString();
-          clients.forEach(client => {
-            if (client.readyState === WebSocket.OPEN) client.send(text);
-          });
+          latestFrames.set(uuid, message.toString());
         }
       }
     } catch (e) {
@@ -362,6 +360,7 @@ wss.on('connection', (ws, req) => {
       phones.delete(uuid);
       aiConfigs.delete(uuid);
       activeToys.delete(uuid);
+      latestFrames.delete(uuid);
     }
     console.log(`Phone disconnected: ${uuid}`);
   });
@@ -573,6 +572,18 @@ server.listen(PORT, '0.0.0.0', () => {
   console.log(`Web UI: http://localhost:${PORT}/<phone-id>`);
   console.log(`Phone WebSocket: ws://localhost:${PORT}?id=<phone-id>`);
 });
+
+// Flush latest simulation frame to browser stream clients at 50ms intervals
+setInterval(() => {
+  for (const [uuid, text] of latestFrames) {
+    latestFrames.delete(uuid);
+    const clients = streams.get(uuid);
+    if (!clients || clients.size === 0) continue;
+    clients.forEach(client => {
+      if (client.readyState === WebSocket.OPEN) client.send(text);
+    });
+  }
+}, 50);
 
 // Keep browser stream connections alive through nginx
 setInterval(() => {
