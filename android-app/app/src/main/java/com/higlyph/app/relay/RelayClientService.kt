@@ -20,6 +20,8 @@ import kotlinx.coroutines.*
 import com.higlyph.app.api.HardwareApiHandler
 import com.higlyph.app.toys.LiveGlyphPreview
 import com.higlyph.app.toys.LiveGlyphFrame
+import com.higlyph.app.toys.LiveGlyphSource
+import com.higlyph.app.toys.LiveGlyphMode
 import com.higlyph.app.serialization.GlyphImageSerializer
 
 /**
@@ -186,6 +188,7 @@ class RelayClientService : Service() {
                 "message" -> {
                     if (alreadyProcessed(message.id)) { sendAck(message.id); return }
                     markProcessed(message.id)
+                    stopToy()
                     forwardToHardwareApi(message.text ?: "", message.speed ?: 20)
                     showMessageNotification(message.text ?: "")
                     sendAck(message.id)
@@ -193,6 +196,7 @@ class RelayClientService : Service() {
                 "draw" -> {
                     if (alreadyProcessed(message.id)) { sendAck(message.id); return }
                     markProcessed(message.id)
+                    stopToy()
                     message.pixels?.let { forwardFrameToHardwareApi(it) }
                     showMessageNotification("✦ drawing received")
                     sendAck(message.id)
@@ -218,10 +222,14 @@ class RelayClientService : Service() {
     }
 
     private fun forwardFrameToHardwareApi(pixels: String) {
+        val grid = GlyphImageSerializer.binaryToPixelGrid(pixels)
+        if (grid != null) LiveGlyphPreview.publish(grid, LiveGlyphSource.SCROLLING_TEXT_TOY, LiveGlyphMode.STATIC_IMAGE)
         serviceScope.launch { apiHandler.displayFrame(pixels, 255) }
     }
 
     private fun forwardToyFrameToHardwareApi(pixels: String) {
+        val grid = GlyphImageSerializer.binaryToPixelGrid(pixels)
+        if (grid != null) LiveGlyphPreview.publish(grid, LiveGlyphSource.SCROLLING_TEXT_TOY, LiveGlyphMode.SCROLLING_TEXT)
         apiHandler.displayFrame(pixels, 255)
     }
 
