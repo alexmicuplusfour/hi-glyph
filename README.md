@@ -1,5 +1,7 @@
 # hi! glyph
 
+[![Download APK](https://img.shields.io/github/v/release/alexmicuplusfour/hi-glyph?label=download%20apk&logo=android)](https://github.com/alexmicuplusfour/hi-glyph/releases/latest/download/hi-glyph.apk)
+
 Control the Nothing Phone (4a) Pro's 13×13 LED matrix from any browser, anywhere.
 
 Install the Android app, point it at a relay server, and anyone with the link can send messages, draw pixel art, or run animations on the display.
