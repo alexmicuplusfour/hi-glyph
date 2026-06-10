@@ -91,6 +91,14 @@ class MainActivitySimple : AppCompatActivity() {
 
             relayPrefs = getSharedPreferences(RelayClientService.PREF_FILE, Context.MODE_PRIVATE)
 
+            // First-run: pre-configure default relay so it works out of the box
+            if (!relayPrefs.contains(RelayClientService.PREF_SERVER_URL)) {
+                relayPrefs.edit()
+                    .putString(RelayClientService.PREF_SERVER_URL, "https://higlyph.app")
+                    .putBoolean(RelayClientService.PREF_ENABLED, true)
+                    .commit()
+            }
+
             // Phone ID setup
             val phoneId = getOrCreatePhoneId()
             updateRelayUrl(phoneId)
@@ -153,7 +161,7 @@ class MainActivitySimple : AppCompatActivity() {
             findViewById<FrameLayout>(R.id.closePanelBtn).setOnClickListener { closePanel() }
 
             // Load relay settings
-            val savedUrl = relayPrefs.getString(RelayClientService.PREF_SERVER_URL, "")
+            val savedUrl = relayPrefs.getString(RelayClientService.PREF_SERVER_URL, "https://higlyph.app")
             val currentStatus = relayPrefs.getString(RelayClientService.PREF_STATUS, RelayClientService.STATUS_DISCONNECTED)
             serverUrlInput.setText(savedUrl)
             updateRelayStatus(currentStatus ?: RelayClientService.STATUS_DISCONNECTED)
