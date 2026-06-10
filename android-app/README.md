@@ -32,7 +32,7 @@ Built with the [Nothing Glyph Matrix SDK](https://github.com/Nothing-Developer-P
 
 Based on [glyph-matrix-lab](https://github.com/alex-1121/glyph-matrix-lab) by [alex-1121](https://github.com/alex-1121) — extended with relay server and web control.
 
-Made by [alexmicuplusfour](https://github.com/alexmicuplusfour).
+> **Disclaimer:** This project is 100% vibecoded. All code was written by Claude.
 
 ---
 
