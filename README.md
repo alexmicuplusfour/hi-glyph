@@ -34,6 +34,25 @@ Install the Android app, point it at a relay server, and anyone with the link ca
 
 ---
 
+## Setup
+
+1. [Download and install the APK](https://github.com/alexmicuplusfour/hi-glyph/releases/latest/download/hi-glyph.apk) — the app connects to `higlyph.app` automatically and gives you a personal URL to share
+2. In phone Settings, go to **Glyph Interface → Flip to Glyph** and enable **Always-on Glyph Toy**
+3. Select **hi! glyph** from the toy list
+
+<table>
+  <tr>
+    <td><img src="screenshots/config/Screenshot_20260610-031703.png" width="260"/></td>
+    <td><img src="screenshots/config/Screenshot_20260610-031709.png" width="260"/></td>
+  </tr>
+  <tr>
+    <td align="center">Enable Always-on Glyph Toy</td>
+    <td align="center">Select hi! glyph</td>
+  </tr>
+</table>
+
+---
+
 ## How it works
 
 ```
