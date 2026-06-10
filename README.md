@@ -102,7 +102,7 @@ For production: put nginx in front (see the nginx config in the repo), get a cer
 
 Built with the [Nothing Glyph Matrix SDK](https://github.com/Nothing-Developer-Programme).
 
-Original "Matrix Lab" project by [sajenko](https://github.com/sajenko) — extended with relay server and web control.
+Based on [glyph-matrix-lab](https://github.com/alex-1121/glyph-matrix-lab) by [alex-1121](https://github.com/alex-1121) — extended with relay server and web control.
 
 Made by [alexmicuplusfour](https://github.com/alexmicuplusfour).
 

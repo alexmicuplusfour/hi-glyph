@@ -315,7 +315,7 @@ app/src/main/java/com/higlyph/app/
 
 Built with the [Nothing Glyph Matrix SDK](https://github.com/Nothing-Developer-Programme).
 
-Original "Matrix Lab" project by [sajenko](https://github.com/sajenko) — extended with Hardware API, relay server, and web control.
+Based on [glyph-matrix-lab](https://github.com/alex-1121/glyph-matrix-lab) by [alex-1121](https://github.com/alex-1121) — extended with Hardware API, relay server, and web control.
 
 Made by [alexmicuplusfour](https://github.com/alexmicuplusfour).
 
