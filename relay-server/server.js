@@ -249,6 +249,7 @@ function schedulePendingRetry(uuid, msgId) {
     const q = pending.get(uuid);
     const e = q?.get(msgId);
     if (!e) return;
+    e.retries++;
     if (e.retries >= MAX_RETRIES) {
       console.log(`[${uuid}] msg ${msgId} unacked after ${MAX_RETRIES} retries, dropping`);
       q.delete(msgId);
@@ -256,7 +257,6 @@ function schedulePendingRetry(uuid, msgId) {
     }
     const phone = phones.get(uuid);
     if (phone && phone.ws.readyState === WebSocket.OPEN) {
-      e.retries++;
       console.log(`[${uuid}] Retrying msg ${msgId} (attempt ${e.retries})`);
       phone.ws.send(e.payload);
     }
