@@ -104,10 +104,12 @@ Built with the [Nothing Glyph Matrix SDK](https://github.com/Nothing-Developer-P
 
 Based on [glyph-matrix-lab](https://github.com/alex-1121/glyph-matrix-lab) by [alex-1121](https://github.com/alex-1121) — extended with relay server and web control.
 
-> **Disclaimer:** This project is 100% vibecoded. All code was written by Claude.
-
 ---
 
 ## License
 
 GPL-3.0 — see [android-app/LICENSE](android-app/LICENSE).
+
+---
+
+This project is entirely 𝚟𝚒𝚋𝚎𝚌𝚘𝚍𝚎𝚍.
